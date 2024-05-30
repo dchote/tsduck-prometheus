@@ -1,8 +1,10 @@
 # TSDuck Prometheus
 
-TSDuck Prometheus is a tool to export values from a TSDuck analyser pipeline into Prometheus, to enable you to build realtime Grafana dashboards for monitoring of MPEG-TS transport streams
+TSDuck Prometheus is a tool to export values from a TSDuck analyser pipeline into Prometheus, to enable you to build realtime Grafana dashboards for monitoring of MPEG-TS transport streams from an SRT Listener
 
 The metrics exported try to cover most of ETR290 Priority 1
+
+Running tsduck-prometheus will expose port 8000, you can access the metrics endpoint as such: http://localhost:8000/metrics
 
 ## Using this tool
 
@@ -12,8 +14,8 @@ Make sure you have TSDuck and Go version >1.18 installed, and can run 'tsp' comm
 
 ```
 go mod tidy
-go build -o /tsduck-prometheus
-./tsduck-prometheus 225.0.0.1:20000,172.0.0.1,My_Service
+go build -o tsduck-prometheus
+./tsduck-prometheus 10.205.203.64:3333,My_Device_Name
 ```
 
 ### Docker
@@ -24,7 +26,7 @@ Local to the Dockerfile, the following commands can be used to get started using
 
 ```
 docker build -t tsduck-prometheus .
-docker run -d --network host tsduck-prometheus 225.0.0.1:20000,172.0.0.1,My_Service
+docker run -d --network host tsduck-prometheus 10.205.203.64:3333,My_Device_Name
 ```
 
 ## Example Grafana Dashboard
