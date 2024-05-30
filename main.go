@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 	"tsduck-prometheus/models"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -99,8 +100,27 @@ func updateTableValues(target, label string, tables models.Tables) {
 	models.TsPidRepititionPkt.WithLabelValues(target, label, fmt.Sprint(tables.Pid), strconv.FormatInt(int64(tables.Pid), 16)).Set(float64(tables.RepetitionPkt))
 }
 
-func readTspOut(target, label string, scanner *bufio.Scanner) {
+func launchTsp(target, label string) {
 	var tsp models.Tsp
+
+	// Launch TSP pointing at our SRT target
+	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "-P", "analyze", "-i", "1", "--json-line", "-O", "drop")
+	// TSDuck outputs to stderr
+	cmdReader, err := cmd.StderrPipe()
+
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Printf("Started monitoring for %v\n", label)
+	}
+
+	if err := cmd.Start(); err != nil {
+		fmt.Printf("process error %v\n", err)
+		return
+	}
+
+	// Create buffer to read the stderr output
+	scanner := bufio.NewScanner(cmdReader)
 
 	for scanner.Scan() {
 		s := scanner.Text()
@@ -127,32 +147,11 @@ func readTspOut(target, label string, scanner *bufio.Scanner) {
 			go updateTableValues(target, label, table)
 		}
 	}
-}
 
-func launchTsp(target, label string) {
-	// Launch TSP pointing at our SRT target
-	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "-P", "analyze", "-i", "1", "--json-line", "-O", "drop")
-	// TSDuck outputs to stderr
-	cmdReader, err := cmd.StderrPipe()
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		fmt.Printf("Started monitoring for %v\n", label)
-	}
-
-	// Create buffer to read the stderr output
-	scanner := bufio.NewScanner(cmdReader)
-
-	go func() {
-		// Read Output Buffer
-		readTspOut(target, label, scanner)
-	}()
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
-	}
 	if err := cmd.Wait(); err != nil {
-		log.Fatal(err)
+		fmt.Printf("process error %v\n", err)
 	}
+
 }
 
 func main() {
@@ -168,7 +167,14 @@ func main() {
 			log.Fatal("Not enough arguments! Required format is target:port,source,label, e.g. 10.205.203.64:3333,My_Service")
 		}
 		// Launch TSDuck (tsp subprocess)
-		go launchTsp(s[0], s[1])
+		go func() {
+			for {
+				launchTsp(s[0], s[1])
+
+				fmt.Printf("tsp exited... restarting in 15s\n")
+				time.Sleep(15 * time.Second)
+			}
+		}()
 	}
 
 	r := prometheus.NewRegistry()
