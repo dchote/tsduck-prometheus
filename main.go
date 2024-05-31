@@ -162,6 +162,7 @@ func launchTsp(target, label string) {
 			// Unmarshal JSON into TSP SRT model
 			json.Unmarshal([]byte(t), &tspSRT)
 
+			fmt.Printf("tsp srt %v\n", tspSRT)
 		}
 
 	}
