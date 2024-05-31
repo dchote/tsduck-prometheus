@@ -24,9 +24,9 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 3,
+  "id": 6,
   "links": [],
-  "liveNow": false,
+  "liveNow": true,
   "panels": [
     {
       "datasource": {
@@ -39,6 +39,7 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisGridShow": false,
@@ -53,6 +54,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineStyle": {
               "fill": "solid"
@@ -105,6 +107,7 @@
           "showLegend": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "none",
           "sort": "none"
         }
@@ -114,11 +117,15 @@
           "datasource": {
             "type": "prometheus"
           },
+          "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "ts_bitrate_bytes",
+          "expr": "ts_bitrate_bytes{target=\"$Target\"}",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "useBackend": false
         }
       ],
       "title": "TS Bitrate",
@@ -169,6 +176,7 @@
           "values": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -179,7 +187,7 @@
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_bitrate_bytes{}",
+          "expr": "ts_pid_bitrate_bytes{target=\"$Target\"}",
           "legendFormat": "PID {{pid_hexadecimal}} ({{description}})",
           "range": true,
           "refId": "A"
@@ -234,6 +242,7 @@
       "id": 4,
       "maxDataPoints": 1,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -244,14 +253,14 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_bitrate_bytes{}",
+          "expr": "ts_pid_bitrate_bytes{target=\"$Target\"}",
           "format": "table",
           "legendFormat": "__auto",
           "range": true,
@@ -320,16 +329,18 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(ts_packet_invalid_sync_total{})",
+          "expr": "sum(ts_packet_invalid_sync_total{target=\"$Target\"})",
           "legendFormat": "PID {{pid_hexadecimal}}, {{description}}",
           "range": true,
           "refId": "A"
@@ -384,16 +395,18 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(ts_pid_duplicated_total{})",
+          "expr": "sum(ts_pid_duplicated_total{target=\"$Target\"})",
           "legendFormat": "PID {{pid_hexadecimal}}, {{description}}",
           "range": true,
           "refId": "A"
@@ -448,17 +461,19 @@
           "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {},
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(ts_packet_tei_count_total{})",
+          "expr": "sum(ts_packet_tei_count_total{target=\"$Target\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -501,71 +516,6 @@
         "x": 12,
         "y": 7
       },
-      "id": 21,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "value"
-      },
-      "pluginVersion": "9.4.7",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "ts_",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "PCR PID Count",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "blue",
-            "mode": "fixed"
-          },
-          "mappings": [],
-          "noValue": "0",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 18,
-        "y": 7
-      },
       "id": 23,
       "options": {
         "colorMode": "value",
@@ -579,16 +529,18 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value"
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "11.0.0",
       "targets": [
         {
           "datasource": {
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_unreferenced_count_total{}",
+          "expr": "ts_pid_unreferenced_count_total{target=\"$Target\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -609,6 +561,11 @@
           },
           "custom": {
             "fillOpacity": 40,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
             "lineWidth": 1
           },
           "decimals": 0,
@@ -649,6 +606,7 @@
         "rowHeight": 0.9,
         "showValue": "never",
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -661,7 +619,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "increase(ts_pid_discontinuities_total[$__interval])",
+          "expr": "increase(ts_pid_discontinuities_total{target=\"$Target\"}[$__interval])",
           "format": "heatmap",
           "instant": false,
           "legendFormat": "{{description}}",
@@ -682,6 +640,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -695,6 +654,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 1,
@@ -744,6 +704,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -754,7 +715,7 @@
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_min_repitition_ms",
+          "expr": "ts_pid_min_repitition_ms{target=\"$Target\"}",
           "legendFormat": "Min Repetition:  PID {{pid_hexadecimal}}",
           "range": true,
           "refId": "A"
@@ -764,7 +725,7 @@
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_max_repitition_ms",
+          "expr": "ts_pid_max_repitition_ms{target=\"$Target\"}",
           "hide": false,
           "legendFormat": "Max Repetition: PID {{pid_hexadecimal}}",
           "range": true,
@@ -784,6 +745,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -797,6 +759,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 1,
@@ -846,6 +809,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -856,7 +820,7 @@
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_min_repitition_ms{}",
+          "expr": "ts_pid_min_repitition_ms{target=\"$Target\"}",
           "legendFormat": "Min Repetition: PID {{pid_hexadecimal}}",
           "range": true,
           "refId": "A"
@@ -866,7 +830,7 @@
             "type": "prometheus"
           },
           "editorMode": "code",
-          "expr": "ts_pid_max_repitition_ms{}",
+          "expr": "ts_pid_max_repitition_ms{target=\"$Target\"}",
           "hide": false,
           "legendFormat": "Max Repetition: PID {{pid_hexadecimal}}",
           "range": true,
@@ -877,22 +841,48 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "5s",
   "revision": 1,
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "10.205.203.64:3333",
+          "value": "10.205.203.64:3333"
+        },
+        "definition": "label_values(target)",
+        "description": "SRT Target",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Target",
+        "multi": false,
+        "name": "Target",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(target)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
   },
   "time": {
-    "from": "2023-04-12T11:39:03.559Z",
-    "to": "2023-04-12T13:36:19.515Z"
+    "from": "now-1h",
+    "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "",
   "title": "TSDuck Prometheus",
   "uid": "KgOonCL4k",
-  "version": 3,
+  "version": 6,
   "weekStart": ""
 }
