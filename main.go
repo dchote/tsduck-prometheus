@@ -101,10 +101,8 @@ func updateTableValues(target, label string, tables models.Tables) {
 }
 
 func launchTsp(target, label string) {
-	var tsp models.Tsp
-
 	// Launch TSP pointing at our SRT target
-	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "-P", "analyze", "-i", "1", "--json-line", "-O", "drop")
+	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "--statistics-interval", "1000", "--json-line", "-P", "analyze", "-i", "1", "--json-line", "-O", "drop")
 	// TSDuck outputs to stderr
 	cmdReader, err := cmd.StderrPipe()
 
@@ -122,30 +120,50 @@ func launchTsp(target, label string) {
 	// Create buffer to read the stderr output
 	scanner := bufio.NewScanner(cmdReader)
 
+	var tspAnalyze models.TspAnalyze
+	var tspSRT models.TspSRT
+
+	var analyzeMatch = "* analyze: "
+	var srtMatch = "* srt: "
+
 	for scanner.Scan() {
 		s := scanner.Text()
-		// Hacky way of removing the beginning of the JSON line which prepends TSDucks JSON output
-		t := strings.Replace(s, "* analyze: ", "", -1)
-		// Unmarshal JSON into TSP model
-		json.Unmarshal([]byte(t), &tsp)
 
-		// Update PID metrics
-		for _, pid := range tsp.Pids {
-			go updatePidValues(target, label, pid)
+		if s[:len(analyzeMatch)] == analyzeMatch {
+			// capture output from analyze function
+
+			t := strings.Replace(s, analyzeMatch, "", -1)
+			// Unmarshal JSON into TSP Analyze model
+			json.Unmarshal([]byte(t), &tspAnalyze)
+
+			//fmt.Printf("tsp analyze %v\n", tspAnalyze)
+
+			// Update PID metrics
+			for _, pid := range tspAnalyze.Pids {
+				go updatePidValues(target, label, pid)
+			}
+
+			// Update Service metrics
+			for _, service := range tspAnalyze.Services {
+				go updateServiceValues(target, label, service)
+			}
+
+			// Update TS metrics
+			go updateTsValues(target, label, tspAnalyze.Ts)
+
+			// Update TS table metrics
+			for _, table := range tspAnalyze.Tables {
+				go updateTableValues(target, label, table)
+			}
+
+		} else if s[:len(srtMatch)] == srtMatch {
+			// capture srt statistics output
+			t := strings.Replace(s, srtMatch, "", -1)
+			// Unmarshal JSON into TSP SRT model
+			json.Unmarshal([]byte(t), &tspSRT)
+
 		}
 
-		// Update Service metrics
-		for _, service := range tsp.Services {
-			go updateServiceValues(target, label, service)
-		}
-
-		// Update TS metrics
-		go updateTsValues(target, label, tsp.Ts)
-
-		// Update TS table metrics
-		for _, table := range tsp.Tables {
-			go updateTableValues(target, label, table)
-		}
 	}
 
 	if err := cmd.Wait(); err != nil {
@@ -168,11 +186,16 @@ func main() {
 		}
 		// Launch TSDuck (tsp subprocess)
 		go func() {
+			var connectionAttempts = 1
 			for {
+				models.ConReconnectAttempts.WithLabelValues(s[0], s[1]).Set(float64(connectionAttempts))
+
 				launchTsp(s[0], s[1])
 
 				fmt.Printf("tsp exited... restarting in 15s\n")
 				time.Sleep(15 * time.Second)
+
+				connectionAttempts++
 			}
 		}()
 	}
@@ -198,6 +221,7 @@ func main() {
 	r.MustRegister(models.TsPidCount)
 	r.MustRegister(models.TsPcrPidCount)
 	r.MustRegister(models.TsPidUnferencedCount)
+	r.MustRegister(models.ConReconnectAttempts)
 
 	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
 

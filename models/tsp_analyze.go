@@ -1,6 +1,6 @@
 package models
 
-type Tsp struct {
+type TspAnalyze struct {
 	Pids     []Pids     `json:"pids"`
 	Services []Services `json:"services"`
 	Tables   []Tables   `json:"tables"`

@@ -157,27 +157,10 @@ var TsPidUnferencedCount = promauto.NewGaugeVec(
 	[]string{"target", "label", "ts_id"},
 )
 
-// Future additions
-/* var TsServiceClearCount = promauto.NewGaugeVec(
+var ConReconnectAttempts = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
-		Name: "ts_service_clear_count_total",
-		Help: "The total number of clear services detected in the TS.",
+		Name: "con_reconnect_attempts_total",
+		Help: "The total number of re-connection attempts.",
 	},
-	[]string{"target", "label", "ts_id"},
+	[]string{"target", "label"},
 )
-
-var TsServiceScrambledCount = promauto.NewGaugeVec(
-	prometheus.GaugeOpts{
-		Name: "ts_service_scrambled_count_total",
-		Help: "The total number of scrambled services detected in the TS.",
-	},
-	[]string{"target", "label", "ts_id"},
-)
-
-var TsServiceCount = promauto.NewGaugeVec(
-	prometheus.GaugeOpts{
-		Name: "ts_service_count_total",
-		Help: "The total number of clear and scrambled services detected in the TS.",
-	},
-	[]string{"target", "label", "ts_id"},
-) */
