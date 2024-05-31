@@ -102,6 +102,25 @@ func updateTableValues(target, label string, tables models.Tables) {
 	models.TsPidRepititionPkt.WithLabelValues(target, label, fmt.Sprint(tables.Pid), strconv.FormatInt(int64(tables.Pid), 16)).Set(float64(tables.RepetitionPkt))
 }
 
+func updateSRTGlobalValues(target, label string, global models.Global) {
+	models.SRTRTTMs.WithLabelValues(target, label).Set(float64(global.Instant.RTTMs))
+}
+
+func updateSRTRecieveValues(target, label string, recieve models.Receive) {
+	models.SRTIntervalReceiveBytes.WithLabelValues(target, label).Set(float64(recieve.Interval.Bytes))
+	models.SRTIntervalReceiveDropBytes.WithLabelValues(target, label).Set(float64(recieve.Interval.DropBytes))
+	models.SRTIntervalReceiveDroppedPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.DroppedPackets))
+	models.SRTIntervalReceiveIgnoredLatePackets.WithLabelValues(target, label).Set(float64(recieve.Interval.IgnoredLatePackets))
+	models.SRTIntervalReceiveLossBytes.WithLabelValues(target, label).Set(float64(recieve.Interval.LossBytes))
+	models.SRTIntervalReceiveLostPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.LostPackets))
+	models.SRTIntervalReceivePackets.WithLabelValues(target, label).Set(float64(recieve.Interval.Packets))
+	models.SRTIntervalRateMbps.WithLabelValues(target, label).Set(float64(recieve.Interval.RateMbps))
+	models.SRTIntervalReceiveReorderDistancePackets.WithLabelValues(target, label).Set(float64(recieve.Interval.ReorderDistancePackets))
+	models.SRTIntervalReceiveRetransmittedPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.RetransmittedPackets))
+	models.SRTIntervalReceiveSentAckPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.SentAckPackets))
+	models.SRTIntervalReceiveSentNakPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.SentNakPackets))
+}
+
 func launchTsp(target, label string) {
 	// Launch TSP pointing at our SRT target
 	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "--statistics-interval", "1000", "--json-line", "-P", "analyze", "-i", "1", "--json-line", "-O", "drop")
@@ -164,6 +183,8 @@ func launchTsp(target, label string) {
 			// Unmarshal JSON into TSP SRT model
 			json.Unmarshal([]byte(t), &tspSRT)
 
+			go updateSRTGlobalValues(target, label, tspSRT.Global)
+			go updateSRTRecieveValues(target, label, tspSRT.Receive)
 			//fmt.Printf("tsp srt %v\n", tspSRT)
 		}
 
@@ -206,21 +227,20 @@ func main() {
 	cliArguments()
 
 	go func() {
-		var connectionAttempts = 1
 		for {
-			models.ConReconnectAttempts.WithLabelValues(target, label).Set(float64(connectionAttempts))
+			models.ConReconnectAttempts.WithLabelValues(target, label).Inc()
 
 			launchTsp(target, label)
 
 			fmt.Printf("tsp exited... restarting in 15s\n")
 			time.Sleep(15 * time.Second)
-
-			connectionAttempts++
 		}
 	}()
 
 	r := prometheus.NewRegistry()
 	// Register prometheus metrics
+
+	// transport stream
 	r.MustRegister(models.TsBitrate)
 	r.MustRegister(models.TsPcrBitrate)
 	r.MustRegister(models.TsPidBitrate)
@@ -241,7 +261,23 @@ func main() {
 	r.MustRegister(models.TsPcrPidCount)
 	r.MustRegister(models.TsPidUnferencedCount)
 
+	// connection
 	r.MustRegister(models.ConReconnectAttempts)
+
+	// srt
+	r.MustRegister(models.SRTRTTMs)
+	r.MustRegister(models.SRTIntervalReceiveBytes)
+	r.MustRegister(models.SRTIntervalReceiveDropBytes)
+	r.MustRegister(models.SRTIntervalReceiveDroppedPackets)
+	r.MustRegister(models.SRTIntervalReceiveIgnoredLatePackets)
+	r.MustRegister(models.SRTIntervalReceiveLossBytes)
+	r.MustRegister(models.SRTIntervalReceiveLostPackets)
+	r.MustRegister(models.SRTIntervalReceivePackets)
+	r.MustRegister(models.SRTIntervalRateMbps)
+	r.MustRegister(models.SRTIntervalReceiveReorderDistancePackets)
+	r.MustRegister(models.SRTIntervalReceiveRetransmittedPackets)
+	r.MustRegister(models.SRTIntervalReceiveSentAckPackets)
+	r.MustRegister(models.SRTIntervalReceiveSentNakPackets)
 
 	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
 

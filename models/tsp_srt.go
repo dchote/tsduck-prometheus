@@ -14,13 +14,13 @@ type Global struct {
 
 type Receive struct {
 	Instant struct {
-		AvgBelatedMs            int `json:"avg-belated-ms"`
+		AvgBelatedMS            int `json:"avg-belated-ms"`
 		BufferAckBytes          int `json:"buffer-ack-bytes"`
-		BufferAckMs             int `json:"buffer-ack-ms"`
+		BufferAckMS             int `json:"buffer-ack-ms"`
 		BufferAckPackets        int `json:"buffer-ack-packets"`
 		BufferAvailBytes        int `json:"buffer-avail-bytes"`
-		DeliveryDelayMs         int `json:"delivery-delay-ms"`
-		MssBytes                int `json:"mss-bytes"`
+		DeliveryDelayMS         int `json:"delivery-delay-ms"`
+		MSSBytes                int `json:"mss-bytes"`
 		ReorderTolerancePackets int `json:"reorder-tolerance-packets"`
 	} `json:"instant"`
 	Interval struct {
@@ -48,7 +48,7 @@ type Receive struct {
 		Bytes                     int `json:"bytes"`
 		DropBytes                 int `json:"drop-bytes"`
 		DroppedPackets            int `json:"dropped-packets"`
-		ElapsedMs                 int `json:"elapsed-ms"`
+		ElapsedMS                 int `json:"elapsed-ms"`
 		FilterExtraPackets        int `json:"filter-extra-packets"`
 		FilterNotRecoveredPackets int `json:"filter-not-recovered-packets"`
 		FilterRecoveredPackets    int `json:"filter-recovered-packets"`
@@ -68,7 +68,7 @@ type Send struct {
 	Instant struct {
 		AvailBufferBytes           int     `json:"avail-buffer-bytes"`
 		CongestionWindowPackets    int     `json:"congestion-window-packets"`
-		DeliveryDelayMs            int     `json:"delivery-delay-ms"`
+		DeliveryDelayMS            int     `json:"delivery-delay-ms"`
 		EstimatedLinkBandwidthMbps float64 `json:"estimated-link-bandwidth-mbps"`
 		FlowWindowPackets          int     `json:"flow-window-packets"`
 		InFlightPackets            int     `json:"in-flight-packets"`
@@ -76,7 +76,7 @@ type Send struct {
 		MaxBandwidthMbps           int     `json:"max-bandwidth-mbps"`
 		MssBytes                   int     `json:"mss-bytes"`
 		SndBufferBytes             int     `json:"snd-buffer-bytes"`
-		SndBufferMs                int     `json:"snd-buffer-ms"`
+		SndBufferMS                int     `json:"snd-buffer-ms"`
 		SndBufferPackets           int     `json:"snd-buffer-packets"`
 	} `json:"instant"`
 	Interval struct {
@@ -90,7 +90,7 @@ type Send struct {
 		ReceivedNakPackets int `json:"received-nak-packets"`
 		RetransmitBytes    int `json:"retransmit-bytes"`
 		RetransmitPackets  int `json:"retransmit-packets"`
-		SendDurationUs     int `json:"send-duration-us"`
+		SendDurationUS     int `json:"send-duration-us"`
 		SendRateMbps       int `json:"send-rate-mbps"`
 		UniqueBytes        int `json:"unique-bytes"`
 		UniquePackets      int `json:"unique-packets"`
@@ -99,7 +99,7 @@ type Send struct {
 		Bytes              int `json:"bytes"`
 		DropBytes          int `json:"drop-bytes"`
 		DroppedPackets     int `json:"dropped-packets"`
-		ElapsedMs          int `json:"elapsed-ms"`
+		ElapsedMS          int `json:"elapsed-ms"`
 		FilterExtraPackets int `json:"filter-extra-packets"`
 		LostPackets        int `json:"lost-packets"`
 		Packets            int `json:"packets"`
@@ -107,7 +107,7 @@ type Send struct {
 		ReceivedNakPackets int `json:"received-nak-packets"`
 		RestransBytes      int `json:"restrans-bytes"`
 		RetransmitPackets  int `json:"retransmit-packets"`
-		SendDurationUs     int `json:"send-duration-us"`
+		SendDurationUS     int `json:"send-duration-us"`
 		UniqueBytes        int `json:"unique-bytes"`
 		UniquePackets      int `json:"unique-packets"`
 	} `json:"total"`
