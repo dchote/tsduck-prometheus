@@ -15,6 +15,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"github.com/docopt/docopt-go"
 )
 
 func updatePidValues(target, label string, pid models.Pids) {
@@ -162,7 +164,7 @@ func launchTsp(target, label string) {
 			// Unmarshal JSON into TSP SRT model
 			json.Unmarshal([]byte(t), &tspSRT)
 
-			fmt.Printf("tsp srt %v\n", tspSRT)
+			//fmt.Printf("tsp srt %v\n", tspSRT)
 		}
 
 	}
@@ -173,33 +175,49 @@ func launchTsp(target, label string) {
 
 }
 
+var (
+	target     string
+	label      string
+	listenPort int
+)
+
+func cliArguments() {
+	usage := `
+Usage: tsduck-prometheus [options]
+
+Options:
+  -t, --target=<host:port>      Specify target host:port for SRT listener
+  -l, --label=<label>           Specify label to use in Prometheus
+  -p, --port=<port>             Specify listen port [default: 8000]
+  -h, --help                    Show this screen.
+`
+	args, _ := docopt.ParseArgs(usage, os.Args[1:], "")
+
+	target, _ = args.String("--target")
+	label, _ = args.String("--label")
+	listenPort, _ = args.Int("--port")
+
+	if target == "" || label == "" {
+		docopt.PrintHelpAndExit(nil, usage)
+	}
+}
+
 func main() {
-	// Parse Args
-	args := os.Args[1:]
-	if len(args) < 1 {
-		log.Fatal("Not enough arguments! Plase parse at least one input e.g. 10.205.203.64:3333,My_Service")
-	}
+	cliArguments()
 
-	for _, item := range args {
-		s := strings.Split(item, ",")
-		if len(s) < 2 {
-			log.Fatal("Not enough arguments! Required format is target:port,source,label, e.g. 10.205.203.64:3333,My_Service")
+	go func() {
+		var connectionAttempts = 1
+		for {
+			models.ConReconnectAttempts.WithLabelValues(target, label).Set(float64(connectionAttempts))
+
+			launchTsp(target, label)
+
+			fmt.Printf("tsp exited... restarting in 15s\n")
+			time.Sleep(15 * time.Second)
+
+			connectionAttempts++
 		}
-		// Launch TSDuck (tsp subprocess)
-		go func() {
-			var connectionAttempts = 1
-			for {
-				models.ConReconnectAttempts.WithLabelValues(s[0], s[1]).Set(float64(connectionAttempts))
-
-				launchTsp(s[0], s[1])
-
-				fmt.Printf("tsp exited... restarting in 15s\n")
-				time.Sleep(15 * time.Second)
-
-				connectionAttempts++
-			}
-		}()
-	}
+	}()
 
 	r := prometheus.NewRegistry()
 	// Register prometheus metrics
@@ -222,10 +240,11 @@ func main() {
 	r.MustRegister(models.TsPidCount)
 	r.MustRegister(models.TsPcrPidCount)
 	r.MustRegister(models.TsPidUnferencedCount)
+
 	r.MustRegister(models.ConReconnectAttempts)
 
 	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
 
 	http.Handle("/metrics", handler)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":"+strconv.Itoa(listenPort), nil)
 }

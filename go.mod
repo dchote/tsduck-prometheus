@@ -2,7 +2,10 @@ module tsduck-prometheus
 
 go 1.18
 
-require github.com/prometheus/client_golang v1.12.2
+require (
+	github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815
+	github.com/prometheus/client_golang v1.12.2
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
