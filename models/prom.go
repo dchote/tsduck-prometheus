@@ -161,10 +161,10 @@ var TsPidUnferencedCount = promauto.NewGaugeVec(
 
 // Connection
 
-var ConReconnectAttempts = promauto.NewCounterVec(
+var ConnectAttempts = promauto.NewCounterVec(
 	prometheus.CounterOpts{
 		Name: "con_reconnect_attempts_total",
-		Help: "The total number of re-connection attempts.",
+		Help: "The total number of connection attempts.",
 	},
 	[]string{"target", "label"},
 )
@@ -174,7 +174,7 @@ var ConReconnectAttempts = promauto.NewCounterVec(
 var SRTRTTMs = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_rtt_ms",
-		Help: "SRT Round-Trip Time in ms",
+		Help: "SRT Round-Trip Time in ms.",
 	},
 	[]string{"target", "label"},
 )
@@ -182,7 +182,7 @@ var SRTRTTMs = promauto.NewGaugeVec(
 var SRTIntervalReceiveBytes = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_bytes",
-		Help: "The number of bytes passed in reporting interval",
+		Help: "The number of bytes passed in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -190,7 +190,7 @@ var SRTIntervalReceiveBytes = promauto.NewGaugeVec(
 var SRTIntervalReceiveDropBytes = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_drop_bytes",
-		Help: "The number of bytes dropped in reporting interval",
+		Help: "The number of bytes dropped in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -198,7 +198,7 @@ var SRTIntervalReceiveDropBytes = promauto.NewGaugeVec(
 var SRTIntervalReceiveDroppedPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_dropped_packets",
-		Help: "The number of packets dropped in reporting interval",
+		Help: "The number of packets dropped in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -206,7 +206,7 @@ var SRTIntervalReceiveDroppedPackets = promauto.NewGaugeVec(
 var SRTIntervalReceiveIgnoredLatePackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_ignored_late_packets",
-		Help: "The number of packets ignored in reporting interval due to being late",
+		Help: "The number of packets ignored in reporting interval due to being late.",
 	},
 	[]string{"target", "label"},
 )
@@ -214,7 +214,7 @@ var SRTIntervalReceiveIgnoredLatePackets = promauto.NewGaugeVec(
 var SRTIntervalReceiveLossBytes = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_loss_bytes",
-		Help: "The number of bytes lost in reporting interval",
+		Help: "The number of bytes lost in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -222,7 +222,7 @@ var SRTIntervalReceiveLossBytes = promauto.NewGaugeVec(
 var SRTIntervalReceiveLostPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_lost_packets",
-		Help: "The number of packets lost in reporting interval",
+		Help: "The number of packets lost in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -230,7 +230,7 @@ var SRTIntervalReceiveLostPackets = promauto.NewGaugeVec(
 var SRTIntervalReceivePackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_packets",
-		Help: "The number of packets in reporting interval",
+		Help: "The number of packets in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -238,7 +238,7 @@ var SRTIntervalReceivePackets = promauto.NewGaugeVec(
 var SRTIntervalRateMbps = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_rate",
-		Help: "The transmit rate during the reporting interval",
+		Help: "The transmit rate during the reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -246,7 +246,7 @@ var SRTIntervalRateMbps = promauto.NewGaugeVec(
 var SRTIntervalReceiveReorderDistancePackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_reorder_distance_packets",
-		Help: "The number of packets reordered in reporting interval",
+		Help: "The number of packets reordered in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -254,7 +254,7 @@ var SRTIntervalReceiveReorderDistancePackets = promauto.NewGaugeVec(
 var SRTIntervalReceiveRetransmittedPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_retransmitted_packets",
-		Help: "The number of packets retransmitted in reporting interval",
+		Help: "The number of packets retransmitted in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -262,7 +262,7 @@ var SRTIntervalReceiveRetransmittedPackets = promauto.NewGaugeVec(
 var SRTIntervalReceiveSentAckPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_sent_ack_packets",
-		Help: "The number of ack packets in reporting interval",
+		Help: "The number of ack packets in reporting interval.",
 	},
 	[]string{"target", "label"},
 )
@@ -270,7 +270,7 @@ var SRTIntervalReceiveSentAckPackets = promauto.NewGaugeVec(
 var SRTIntervalReceiveSentNakPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_sent_nak_packets",
-		Help: "The number of nak packets in reporting interval",
+		Help: "The number of nak packets in reporting interval.",
 	},
 	[]string{"target", "label"},
 )

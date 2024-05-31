@@ -228,7 +228,7 @@ func main() {
 
 	go func() {
 		for {
-			models.ConReconnectAttempts.WithLabelValues(target, label).Inc()
+			models.ConnectAttempts.WithLabelValues(target, label).Inc()
 
 			launchTsp(target, label)
 
@@ -262,7 +262,7 @@ func main() {
 	r.MustRegister(models.TsPidUnferencedCount)
 
 	// connection
-	r.MustRegister(models.ConReconnectAttempts)
+	r.MustRegister(models.ConnectAttempts)
 
 	// srt
 	r.MustRegister(models.SRTRTTMs)
