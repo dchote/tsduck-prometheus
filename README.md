@@ -15,7 +15,7 @@ Make sure you have TSDuck and Go version >1.18 installed, and can run 'tsp' comm
 ```
 go mod tidy
 go build -o tsduck-prometheus
-./tsduck-prometheus 10.205.203.64:3333,My_Device_Name
+./tsduck-prometheus -t 10.205.203.64:3333 -l My_Device_Name
 ```
 
 ### Docker
@@ -26,7 +26,7 @@ Local to the Dockerfile, the following commands can be used to get started using
 
 ```
 docker build -t tsduck-prometheus .
-docker run -d --network host tsduck-prometheus 10.205.203.64:3333,My_Device_Name
+docker run -d --network host tsduck-prometheus -t 10.205.203.64:3333 -l My_Device_Name
 ```
 
 ## Example Grafana Dashboard
