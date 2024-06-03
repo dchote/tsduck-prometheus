@@ -102,6 +102,16 @@ func updateTableValues(target, label string, tables models.Tables) {
 	models.TsPidRepititionPkt.WithLabelValues(target, label, fmt.Sprint(tables.Pid), strconv.FormatInt(int64(tables.Pid), 16)).Set(float64(tables.RepetitionPkt))
 }
 
+func updateContinuityValues(target, label string, tspContinuity models.TspContinuity) {
+	if tspContinuity.Packets >= 1 {
+		sum := 0
+		for sum < tspContinuity.Packets {
+			sum += 1
+			models.TsDiscontinuityTotals.WithLabelValues(target, label, fmt.Sprint(tspContinuity.Pid), strconv.FormatInt(int64(tspContinuity.Pid), 16), tspContinuity.Type).Inc()
+		}
+	}
+}
+
 func updateSRTGlobalValues(target, label string, global models.Global) {
 	models.SRTRTTMs.WithLabelValues(target, label).Set(float64(global.Instant.RTTMs))
 }
@@ -123,7 +133,7 @@ func updateSRTRecieveValues(target, label string, recieve models.Receive) {
 
 func launchTsp(target, label string) {
 	// Launch TSP pointing at our SRT target
-	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "--statistics-interval", "1000", "--json-line", "-P", "analyze", "-i", "1", "--json-line", "-O", "drop")
+	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "--statistics-interval", "1000", "--json-line", "-P", "analyze", "-i", "1", "--json-line", "-P", "continuity", "--json-line", "-O", "drop")
 	// TSDuck outputs to stderr
 	cmdReader, err := cmd.StderrPipe()
 
@@ -143,14 +153,16 @@ func launchTsp(target, label string) {
 
 	var tspAnalyze models.TspAnalyze
 	var tspSRT models.TspSRT
+	var tspContinuity models.TspContinuity
 
 	var analyzeMatch = "* analyze: "
 	var srtMatch = "* srt: "
+	var continuityMatch = "* continuity:"
 
 	for scanner.Scan() {
 		s := scanner.Text()
 
-		if s[:len(analyzeMatch)] == analyzeMatch {
+		if len(s) > len(analyzeMatch) && s[:len(analyzeMatch)] == analyzeMatch {
 			// capture output from analyze function
 
 			t := strings.Replace(s, analyzeMatch, "", -1)
@@ -177,7 +189,7 @@ func launchTsp(target, label string) {
 				go updateTableValues(target, label, table)
 			}
 
-		} else if s[:len(srtMatch)] == srtMatch {
+		} else if len(s) > len(srtMatch) && s[:len(srtMatch)] == srtMatch {
 			// capture srt statistics output
 			t := strings.Replace(s, srtMatch, "", -1)
 			// Unmarshal JSON into TSP SRT model
@@ -186,6 +198,16 @@ func launchTsp(target, label string) {
 			go updateSRTGlobalValues(target, label, tspSRT.Global)
 			go updateSRTRecieveValues(target, label, tspSRT.Receive)
 			//fmt.Printf("tsp srt %v\n", tspSRT)
+		} else if len(s) > len(continuityMatch) && s[:len(continuityMatch)] == continuityMatch {
+			// capture output from continuity function
+
+			t := strings.Replace(s, continuityMatch, "", -1)
+			// Unmarshal JSON into TSP Continuity model
+			json.Unmarshal([]byte(t), &tspContinuity)
+
+			fmt.Printf("tsp continuity %v\n", tspContinuity)
+
+			go updateContinuityValues(target, label, tspContinuity)
 		}
 
 	}
@@ -263,6 +285,7 @@ func main() {
 
 	// connection
 	r.MustRegister(models.ConnectAttempts)
+	r.MustRegister(models.TsDiscontinuityTotals)
 
 	// srt
 	r.MustRegister(models.SRTRTTMs)

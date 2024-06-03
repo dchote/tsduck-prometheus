@@ -169,6 +169,16 @@ var ConnectAttempts = promauto.NewCounterVec(
 	[]string{"target", "label"},
 )
 
+// Continuity
+
+var TsDiscontinuityTotals = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "ts_discontinuity_totals",
+		Help: "",
+	},
+	[]string{"target", "label", "pid", "pid_hexadecimal", "type"},
+)
+
 // SRT
 
 var SRTRTTMs = promauto.NewGaugeVec(
