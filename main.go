@@ -129,6 +129,46 @@ func updateSRTRecieveValues(target, label string, recieve models.Receive) {
 	models.SRTIntervalReceiveRetransmittedPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.RetransmittedPackets))
 	models.SRTIntervalReceiveSentAckPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.SentAckPackets))
 	models.SRTIntervalReceiveSentNakPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.SentNakPackets))
+
+	if recieve.Interval.DroppedPackets >= 1 {
+		sum := 0
+		for sum < recieve.Interval.DroppedPackets {
+			sum += 1
+			models.SRTIntervalReceiveDroppedPacketsTotal.WithLabelValues(target, label).Inc()
+		}
+	}
+
+	if recieve.Interval.IgnoredLatePackets >= 1 {
+		sum := 0
+		for sum < recieve.Interval.IgnoredLatePackets {
+			sum += 1
+			models.SRTIntervalReceiveIgnoredLatePacketsTotal.WithLabelValues(target, label).Inc()
+		}
+	}
+
+	if recieve.Interval.LostPackets >= 1 {
+		sum := 0
+		for sum < recieve.Interval.LostPackets {
+			sum += 1
+			models.SRTIntervalReceiveLostPacketsTotal.WithLabelValues(target, label).Inc()
+		}
+	}
+
+	if recieve.Interval.ReorderDistancePackets >= 1 {
+		sum := 0
+		for sum < recieve.Interval.ReorderDistancePackets {
+			sum += 1
+			models.SRTIntervalReceiveReorderDistancePacketsTotal.WithLabelValues(target, label).Inc()
+		}
+	}
+
+	if recieve.Interval.RetransmittedPackets >= 1 {
+		sum := 0
+		for sum < recieve.Interval.RetransmittedPackets {
+			sum += 1
+			models.SRTIntervalReceiveRetransmittedPacketsTotal.WithLabelValues(target, label).Inc()
+		}
+	}
 }
 
 func launchTsp(target, label string) {
@@ -301,6 +341,12 @@ func main() {
 	r.MustRegister(models.SRTIntervalReceiveRetransmittedPackets)
 	r.MustRegister(models.SRTIntervalReceiveSentAckPackets)
 	r.MustRegister(models.SRTIntervalReceiveSentNakPackets)
+
+	r.MustRegister(models.SRTIntervalReceiveDroppedPacketsTotal)
+	r.MustRegister(models.SRTIntervalReceiveIgnoredLatePacketsTotal)
+	r.MustRegister(models.SRTIntervalReceiveLostPacketsTotal)
+	r.MustRegister(models.SRTIntervalReceiveReorderDistancePacketsTotal)
+	r.MustRegister(models.SRTIntervalReceiveRetransmittedPacketsTotal)
 
 	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
 

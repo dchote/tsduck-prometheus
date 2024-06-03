@@ -213,10 +213,26 @@ var SRTIntervalReceiveDroppedPackets = promauto.NewGaugeVec(
 	[]string{"target", "label"},
 )
 
+var SRTIntervalReceiveDroppedPacketsTotal = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "srt_interval_receive_dropped_packets_total",
+		Help: "The total number of packets dropped.",
+	},
+	[]string{"target", "label"},
+)
+
 var SRTIntervalReceiveIgnoredLatePackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_ignored_late_packets",
 		Help: "The number of packets ignored in reporting interval due to being late.",
+	},
+	[]string{"target", "label"},
+)
+
+var SRTIntervalReceiveIgnoredLatePacketsTotal = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "srt_interval_receive_ignored_late_packets_total",
+		Help: "The total number of packets ignored.",
 	},
 	[]string{"target", "label"},
 )
@@ -233,6 +249,14 @@ var SRTIntervalReceiveLostPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_lost_packets",
 		Help: "The number of packets lost in reporting interval.",
+	},
+	[]string{"target", "label"},
+)
+
+var SRTIntervalReceiveLostPacketsTotal = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "srt_interval_receive_lost_packets_total",
+		Help: "The total number of packets lost.",
 	},
 	[]string{"target", "label"},
 )
@@ -261,10 +285,26 @@ var SRTIntervalReceiveReorderDistancePackets = promauto.NewGaugeVec(
 	[]string{"target", "label"},
 )
 
+var SRTIntervalReceiveReorderDistancePacketsTotal = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "srt_interval_receive_reorder_distance_packets_total",
+		Help: "The total number of packets reordered.",
+	},
+	[]string{"target", "label"},
+)
+
 var SRTIntervalReceiveRetransmittedPackets = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "srt_interval_receive_retransmitted_packets",
 		Help: "The number of packets retransmitted in reporting interval.",
+	},
+	[]string{"target", "label"},
+)
+
+var SRTIntervalReceiveRetransmittedPacketsTotal = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "srt_interval_receive_retransmitted_packets_total",
+		Help: "The total number of packets retransmitted.",
 	},
 	[]string{"target", "label"},
 )
