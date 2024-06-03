@@ -33,5 +33,5 @@ docker run -d --network host tsduck-prometheus -t 10.205.203.64:3333 -l My_Devic
 
 An example dashboard is included on the repository to get you started (see [dashboard.json](dashboard.json))
 
-![screencapture-upvideodev-3000-d-KgOonCL4k-tsduck-prometheus-2023-04-12-15_36_31](https://user-images.githubusercontent.com/4109420/231584536-ada1fb35-83ea-4e6a-89b6-6b2b2b67d2e0.png)
+![screenshot1](screenshots/screenshot1.png)
 
