@@ -55,6 +55,30 @@ var TsPidDuplicated = promauto.NewCounterVec(
 	[]string{"target", "label", "pid", "pid_hexadecimal", "description"},
 )
 
+var TsPidDTSLeap = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "ts_pid_dts_leap_total",
+		Help: "The dts leaps per PID.",
+	},
+	[]string{"target", "label", "pid", "pid_hexadecimal", "description"},
+)
+
+var TsPidPCRLeap = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "ts_pid_pcr_leap_total",
+		Help: "The pcr leaps per PID.",
+	},
+	[]string{"target", "label", "pid", "pid_hexadecimal", "description"},
+)
+
+var TsPidPTSLeap = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "ts_pid_pts_leap_total",
+		Help: "The pts leaps per PID.",
+	},
+	[]string{"target", "label", "pid", "pid_hexadecimal", "description"},
+)
+
 var TsServiceBitrate = promauto.NewGaugeVec(
 	prometheus.GaugeOpts{
 		Name: "ts_service_bitrate_bytes",

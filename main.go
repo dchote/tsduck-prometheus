@@ -40,6 +40,31 @@ func updatePidValues(target, label string, pid models.Pids) {
 			models.TsPidDuplicated.WithLabelValues(target, label, fmt.Sprint(pid.Id), strconv.FormatInt(int64(pid.Id), 16), pid.Description).Inc()
 		}
 	}
+
+	// leaps
+	if pid.Packets.DTSLeap >= 1 {
+		sum := 0
+		for sum < pid.Packets.DTSLeap {
+			sum += 1
+			models.TsPidDTSLeap.WithLabelValues(target, label, fmt.Sprint(pid.Id), strconv.FormatInt(int64(pid.Id), 16), pid.Description).Inc()
+		}
+	}
+
+	if pid.Packets.PCRLeap >= 1 {
+		sum := 0
+		for sum < pid.Packets.PCRLeap {
+			sum += 1
+			models.TsPidPCRLeap.WithLabelValues(target, label, fmt.Sprint(pid.Id), strconv.FormatInt(int64(pid.Id), 16), pid.Description).Inc()
+		}
+	}
+
+	if pid.Packets.PTSLeap >= 1 {
+		sum := 0
+		for sum < pid.Packets.PTSLeap {
+			sum += 1
+			models.TsPidPTSLeap.WithLabelValues(target, label, fmt.Sprint(pid.Id), strconv.FormatInt(int64(pid.Id), 16), pid.Description).Inc()
+		}
+	}
 }
 
 func updateServiceValues(target, label string, service models.Services) {
@@ -322,6 +347,9 @@ func main() {
 	r.MustRegister(models.TsPidCount)
 	r.MustRegister(models.TsPcrPidCount)
 	r.MustRegister(models.TsPidUnferencedCount)
+	r.MustRegister(models.TsPidDTSLeap)
+	r.MustRegister(models.TsPidPCRLeap)
+	r.MustRegister(models.TsPidPTSLeap)
 
 	// connection
 	r.MustRegister(models.ConnectAttempts)
