@@ -197,8 +197,21 @@ func updateSRTRecieveValues(target, label string, recieve models.Receive) {
 }
 
 func launchTsp(target, label string) {
-	// Launch TSP pointing at our SRT target
-	cmd := exec.Command("tsp", "-I", "srt", "--caller", target, "--statistics-interval", "1000", "--json-line", "-P", "analyze", "-i", "1", "--json-line", "-P", "continuity", "--json-line", "-O", "drop")
+	command := ""
+
+	// input protocol specific items
+	if protocol == "srt" {
+		command = "tsp -I srt --caller " + target + " --statistics-interval 1000 --json-line "
+	} else if protocol == "rtsp" {
+		command = "ffmpeg -hide_banner -loglevel quiet -i rtsp://" + target + " -acodec copy -vcodec copy -f mpegts pipe:1 | tsp -r --add-start-stuffing 40000 "
+	}
+
+	// analysis items
+	command += "-P analyze -i 1 --json-line -P continuity --json-line -O drop"
+
+	fmt.Printf("Starting %v\n", command)
+	cmd := exec.Command("bash", "-c", command)
+
 	// TSDuck outputs to stderr
 	cmdReader, err := cmd.StderrPipe()
 
@@ -209,7 +222,7 @@ func launchTsp(target, label string) {
 	}
 
 	if err := cmd.Start(); err != nil {
-		fmt.Printf("process error %v\n", err)
+		fmt.Printf("error starting %v: %v\n", command, err)
 		return
 	}
 
@@ -278,7 +291,7 @@ func launchTsp(target, label string) {
 	}
 
 	if err := cmd.Wait(); err != nil {
-		fmt.Printf("process error %v\n", err)
+		fmt.Printf("%v exited with error: %v\n", command, err)
 	}
 
 }
@@ -287,6 +300,7 @@ var (
 	target     string
 	label      string
 	listenPort int
+	protocol   string
 )
 
 func cliArguments() {
@@ -297,6 +311,7 @@ Options:
   -t, --target=<host:port>      Specify target host:port for SRT listener
   -l, --label=<label>           Specify label to use in Prometheus
   -p, --port=<port>             Specify listen port [default: 8000]
+  -P, --protocol=<protocol>     Specify protocol [default: srt]
   -h, --help                    Show this screen.
 `
 	args, _ := docopt.ParseArgs(usage, os.Args[1:], "")
@@ -304,6 +319,7 @@ Options:
 	target, _ = args.String("--target")
 	label, _ = args.String("--label")
 	listenPort, _ = args.Int("--port")
+	protocol, _ = args.String("--protocol")
 
 	if target == "" || label == "" {
 		docopt.PrintHelpAndExit(nil, usage)

@@ -10,7 +10,7 @@ Running tsduck-prometheus will expose port 8000, you can access the metrics endp
 
 ### Compiling 
 
-Make sure you have TSDuck and Go version >1.18 installed, and can run 'tsp' commands on your machine. Clone this repo and build using the following commands...
+Make sure you have TSDuck, FFmpeg, and Go version >1.18 installed, and can run 'tsp' and 'ffmpeg' commands on your machine. Clone this repo and build using the following commands...
 
 ```
 go mod tidy
