@@ -35,8 +35,8 @@ type pidPackets struct {
 	AF                int `json:"af"`
 	Clear             int `json:"clear"`
 	Discontinuities   int `json:"discontinuities"` //
-	DTS               int `json:"dst"`
-	DTSLeap           int `json:"dst-leap"`
+	DTS               int `json:"dts"`
+	DTSLeap           int `json:"dts-leap"`
 	Duplicated        int `json:"duplicated"` //
 	InvalidScrambling int `json:"invalid-scrambling"`
 	PCR               int `json:"pcr"`
