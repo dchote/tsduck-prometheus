@@ -203,7 +203,7 @@ func launchTsp(target, label string) {
 	if protocol == "srt" {
 		command = "tsp -I srt --caller " + target + " --statistics-interval 1000 --json-line "
 	} else if protocol == "rtsp" {
-		command = "ffmpeg -hide_banner -loglevel quiet -i rtsp://" + target + " -acodec copy -vcodec copy -f mpegts pipe:1 | tsp -r --add-start-stuffing 40000 "
+		command = "gst-launch-1.0 -q rtspsrc location=\"rtsp://" + target + "\" ! rtpmp2tdepay ! filesink location=/dev/stdout | tsp -r "
 	}
 
 	// analysis items
