@@ -348,3 +348,11 @@ var SRTIntervalReceiveSentNakPackets = promauto.NewGaugeVec(
 	},
 	[]string{"target", "label"},
 )
+
+var SRTIntervalReceivePacketSize = promauto.NewGaugeVec(
+	prometheus.GaugeOpts{
+		Name: "srt_interval_receive_packet_size",
+		Help: "The average size of packets in reporting interval.",
+	},
+	[]string{"target", "label"},
+)

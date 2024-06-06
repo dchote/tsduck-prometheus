@@ -155,6 +155,10 @@ func updateSRTRecieveValues(target, label string, recieve models.Receive) {
 	models.SRTIntervalReceiveSentAckPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.SentAckPackets))
 	models.SRTIntervalReceiveSentNakPackets.WithLabelValues(target, label).Set(float64(recieve.Interval.SentNakPackets))
 
+	if recieve.Interval.UniquePackets > 0 && recieve.Interval.UniqueBytes > 0 {
+		models.SRTIntervalReceivePacketSize.WithLabelValues(target, label).Set(float64(recieve.Interval.UniqueBytes / recieve.Interval.UniquePackets))
+	}
+
 	if recieve.Interval.DroppedPackets >= 1 {
 		sum := 0
 		for sum < recieve.Interval.DroppedPackets {
@@ -391,6 +395,8 @@ func main() {
 	r.MustRegister(models.SRTIntervalReceiveLostPacketsTotal)
 	r.MustRegister(models.SRTIntervalReceiveReorderDistancePacketsTotal)
 	r.MustRegister(models.SRTIntervalReceiveRetransmittedPacketsTotal)
+
+	r.MustRegister(models.SRTIntervalReceivePacketSize)
 
 	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
 
