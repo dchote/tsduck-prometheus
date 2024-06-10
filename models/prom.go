@@ -203,6 +203,16 @@ var TsDiscontinuityTotals = promauto.NewCounterVec(
 	[]string{"target", "label", "pid", "pid_hexadecimal", "type"},
 )
 
+// PCR Extract
+
+var TSPidPCRInterval = promauto.NewGaugeVec(
+	prometheus.GaugeOpts{
+		Name: "ts_pid_pcr_interval",
+		Help: "The interval between pcr packets by PID and Type",
+	},
+	[]string{"target", "label", "pid_hexadecimal", "type"},
+)
+
 // SRT
 
 var SRTRTTMs = promauto.NewGaugeVec(

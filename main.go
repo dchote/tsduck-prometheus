@@ -137,6 +137,20 @@ func updateContinuityValues(target, label string, tspContinuity models.TspContin
 	}
 }
 
+func updatePCRExtractValues(target, label string, logLine string) {
+	var PIDHex = logLine[13:16]
+	var Type = logLine[19:22]
+
+	var lastComma = strings.LastIndex(logLine, ",")
+	var lastMS = strings.LastIndex(logLine, "ms")
+
+	var IntervalMS, _ = strconv.ParseFloat(logLine[lastComma+2:lastMS-1], 64)
+
+	//fmt.Printf("tsp pcrextract: TYPE %v PID %v Interval: %v\n", Type, PIDHex, IntervalMS)
+
+	models.TSPidPCRInterval.WithLabelValues(target, label, PIDHex, Type).Set(float64(IntervalMS))
+}
+
 func updateSRTGlobalValues(target, label string, global models.Global) {
 	models.SRTRTTMs.WithLabelValues(target, label).Set(float64(global.Instant.RTTMs))
 }
@@ -211,7 +225,7 @@ func launchTsp(target, label string) {
 	}
 
 	// analysis items
-	command += "-P analyze -i 1 --json-line -P continuity --json-line -O drop"
+	command += "-P analyze -i 1 --json-line -P continuity --json-line -P pcrextract -l -O drop"
 
 	fmt.Printf("Starting %v\n", command)
 	cmd := exec.Command("bash", "-c", command)
@@ -239,7 +253,8 @@ func launchTsp(target, label string) {
 
 	var analyzeMatch = "* analyze: "
 	var srtMatch = "* srt: "
-	var continuityMatch = "* continuity:"
+	var continuityMatch = "* continuity: "
+	var pcrMatch = "* pcrextract: "
 
 	for scanner.Scan() {
 		s := scanner.Text()
@@ -287,9 +302,16 @@ func launchTsp(target, label string) {
 			// Unmarshal JSON into TSP Continuity model
 			json.Unmarshal([]byte(t), &tspContinuity)
 
-			fmt.Printf("tsp continuity %v\n", tspContinuity)
+			//fmt.Printf("tsp continuity %v\n", tspContinuity)
 
 			go updateContinuityValues(target, label, tspContinuity)
+		} else if len(s) > len(pcrMatch) && s[:len(pcrMatch)] == pcrMatch {
+			// capture output from pcrextract function
+			var logLine = s[len(pcrMatch):len(s)]
+
+			//fmt.Printf("tsp pcrextract %v\n", logLine)
+
+			go updatePCRExtractValues(target, label, logLine)
 		}
 
 	}
@@ -373,7 +395,12 @@ func main() {
 
 	// connection
 	r.MustRegister(models.ConnectAttempts)
+
+	// continuity
 	r.MustRegister(models.TsDiscontinuityTotals)
+
+	// pcr extract
+	r.MustRegister(models.TSPidPCRInterval)
 
 	// srt
 	r.MustRegister(models.SRTRTTMs)
