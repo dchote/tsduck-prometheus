@@ -138,7 +138,7 @@ func updateContinuityValues(target, label string, tspContinuity models.TspContin
 }
 
 func updatePCRExtractValues(target, label string, logLine string) {
-	var PIDHex = logLine[13:16]
+	var PIDHex = logLine[8:11]
 	var Type = logLine[19:22]
 
 	var lastComma = strings.LastIndex(logLine, ",")
